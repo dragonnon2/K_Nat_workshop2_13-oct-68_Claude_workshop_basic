@@ -505,6 +505,13 @@ Closes #[issue-number]
 -   *Example: Appreciates clear, actionable feedback and well-defined tasks.*
 -   **Time zone preference: GMT+7 (Bangkok/Asia)**
 
+### Project-Specific Patterns (2025-10-26)
+-   **Component Architecture**: Modular section-based components with TypeScript interfaces
+-   **Data-Driven Content**: Centralized data files for easy content updates
+-   **Monochrome Design**: Professional black, white, gray color palette for minimal aesthetic
+-   **Smooth Scrolling Navigation**: Single-page applications with anchor link navigation
+-   **Portfolio Structure**: Standard sections (Hero, About, Skills, Experience, Education, Projects, Contact)
+
 ## Troubleshooting
 
 ### Common Issues
@@ -526,6 +533,32 @@ lsof -i :[port-number]
 
 # Kill the process
 kill -9 [PID]
+```
+
+#### Next.js Client Component Errors
+```bash
+# Error: Event handlers cannot be passed to Client Component props
+# Solution: Add 'use client' directive to components with event handlers
+
+# Example fix:
+'use client';
+
+const Component = () => {
+  const handleClick = () => console.log('clicked');
+  return <button onClick={handleClick}>Click me</button>;
+};
+```
+
+#### Tailwind CSS Not Working
+```bash
+# Check if PostCSS is configured correctly
+cat postcss.config.mjs
+
+# Verify Tailwind configuration
+cat tailwind.config.ts
+
+# Rebuild CSS
+npm run build
 ```
 
 ## Appendices
@@ -555,5 +588,49 @@ Ctrl+b, d              # Detach from session
 -   [ ] Environment variables set
 -   [ ] Git configured
 
-**Last Updated**: [Date]
+**Last Updated**: 2025-10-26
 **Version**: 1.0.0
+
+---
+
+## Additional Lessons Learned (2025-10-26 Session)
+
+### Tailwind CSS v4 Migration Challenges
+-   **Lesson**: Tailwind CSS v4 requires @tailwindcss/postcss plugin, uses `@import "tailwindcss"` instead of `@tailwind` directives, and standard utilities work better than custom colors
+-   **Impact**: Major version upgrades need migration guide review before implementation
+-   **Application**: Always check framework release notes and migration docs before upgrading; prefer standard utilities over custom configurations for better compatibility
+
+### Framework Configuration Best Practices
+-   **Lesson**: Module format in package.json ("type": "module") must match source code syntax (import/export vs require)
+-   **Impact**: Mismatched formats cause cryptic build errors
+-   **Application**: Set package.json "type" field based on source code syntax; ESM imports require "module" type
+
+### Git Workflow on Windows
+-   **Lesson**: Create .gitignore immediately after project init to avoid node_modules path length issues on Windows
+-   **Impact**: Windows MAX_PATH limitations cause commit failures with deeply nested node_modules
+-   **Application**: Add .gitignore before first commit; exclude node_modules, .next, build artifacts
+
+### Incremental Build Verification
+-   **Lesson**: Running `npm run build` after each major phase catches configuration issues earlier
+-   **Impact**: Debugging one issue at a time is easier than fixing 14 errors simultaneously
+-   **Application**: Build after foundation setup, after first component, after layout complete, not just at the end
+
+### Design Constraints as Features
+-   **Lesson**: Monochrome color palette constraint reduced decision fatigue and accelerated development
+-   **Impact**: Fewer choices lead to faster decisions and often better, more consistent designs
+-   **Application**: Consider design constraints (limited palette, grid system, component library) as productivity features
+
+### Component Architecture for Portfolios
+-   **Lesson**: Section-based modular components (components/sections/) enable easy customization and reordering
+-   **Impact**: Users can modify individual sections without touching other code; clean separation of concerns
+-   **Application**: Default to modular architecture for multi-section applications (portfolios, landing pages, documentation sites)
+
+### TodoWrite for Long Sessions
+-   **Lesson**: Using TodoWrite to track 14 distinct phases maintained focus through a 14-hour session
+-   **Impact**: Long sessions can lose direction without clear progress tracking
+-   **Application**: Use TodoWrite proactively for any multi-step task lasting more than 1 hour; update status in real-time
+
+### Static Export Configuration
+-   **Lesson**: Portfolio and landing pages benefit from static export (output: 'export' in next.config.ts)
+-   **Impact**: Static sites deploy anywhere (Vercel, Netlify, GitHub Pages, S3) without server requirements
+-   **Application**: Use static export for content-heavy sites without dynamic server features; improves deployment flexibility and reduces hosting costs
