@@ -8,7 +8,7 @@ const PORT = 3000;
 // Folder configurations
 const folders = [
   { name: 'sonnet4.5', path: 'sonnet4.5/out', available: true },
-  { name: 'glm4.6', path: 'glm4.6', available: false }  // No out folder yet
+  { name: 'glm4.6', path: 'glm4.6/out', available: true }
 ];
 
 // Root page - show folder selection
@@ -52,6 +52,9 @@ app.get('/', (req, res) => {
 
 // Serve sonnet4.5 static files
 app.use('/sonnet4.5', express.static(path.join(__dirname, 'sonnet4.5/out')));
+
+// Serve glm4.6 static files
+app.use('/glm4.6', express.static(path.join(__dirname, 'glm4.6/out')));
 
 // 404 handler
 app.use((req, res) => {
