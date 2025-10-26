@@ -634,3 +634,30 @@ Ctrl+b, d              # Detach from session
 -   **Lesson**: Portfolio and landing pages benefit from static export (output: 'export' in next.config.ts)
 -   **Impact**: Static sites deploy anywhere (Vercel, Netlify, GitHub Pages, S3) without server requirements
 -   **Application**: Use static export for content-heavy sites without dynamic server features; improves deployment flexibility and reduces hosting costs
+
+## Additional Lessons Learned (2025-10-26 Express Server Session)
+
+### Next.js basePath for Subdirectory Deployment
+-   **Lesson**: When serving Next.js apps from subdirectories (e.g., /app1, /app2), configure basePath in next.config.ts to ensure assets load from correct paths
+-   **Impact**: Without basePath, CSS/JS assets try to load from root (/_next/) instead of subfolder (/app1/_next/), causing unstyled pages
+-   **Application**: Always set basePath when deploying Next.js to non-root paths; rebuild after configuration changes
+
+### Visual Verification is Critical for UI
+-   **Lesson**: Playwright screenshots and browser console inspection are essential for debugging styling issues
+-   **Impact**: Can confirm visual rendering vs assuming from logs; console errors point directly to missing assets
+-   **Application**: Take screenshots when user reports UI issues; check browser console for 404s and asset loading failures
+
+### Clarify Requirements Before Implementation
+-   **Lesson**: "Serve HTML" can mean "browse HTML files" or "render HTML applications" - fundamentally different requirements
+-   **Impact**: Built wrong solution first (directory browser instead of app server), wasted iteration time
+-   **Application**: Ask clarifying questions when user requests are ambiguous; confirm understanding before coding
+
+### Express Middleware Ordering Matters
+-   **Lesson**: Custom middleware must come before catch-all routes and static file middleware in Express
+-   **Impact**: Incorrect ordering causes requests to hit wrong handlers, breaking functionality
+-   **Application**: Place specific routes/middleware before general ones; test route precedence when debugging
+
+### Iterative Feedback Loops Accelerate Solutions
+-   **Lesson**: User's concise feedback ("it is just folder structure", "it still dont serve beautiful page") quickly identified gaps
+-   **Impact**: Each iteration brought closer to actual requirement; direct communication prevented prolonged wrong direction
+-   **Application**: Encourage users to provide specific, actionable feedback; iterate quickly rather than building comprehensive solutions upfront
