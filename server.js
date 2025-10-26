@@ -5,54 +5,60 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
-app.use((req, res) => {
-  const filePath = path.join(__dirname, req.path);
+// Folder configurations
+const folders = [
+  { name: 'sonnet4.5', path: 'sonnet4.5/out', available: true },
+  { name: 'glm4.6', path: 'glm4.6', available: false }  // No out folder yet
+];
 
-  // Check if path exists
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).send('Not found');
-  }
-
-  const stat = fs.statSync(filePath);
-
-  // If it's a directory, list contents
-  if (stat.isDirectory()) {
-    const files = fs.readdirSync(filePath);
-
-    let html = `<!DOCTYPE html>
+// Root page - show folder selection
+app.get('/', (req, res) => {
+  let html = `<!DOCTYPE html>
 <html>
 <head>
-  <title>Index of ${req.path}</title>
+  <title>HTML Folder Browser</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+    h1 { color: #333; }
+    .folder-list { list-style: none; padding: 0; }
+    .folder-item { margin: 15px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+    .folder-item a { text-decoration: none; color: #007bff; font-size: 18px; }
+    .folder-item a:hover { text-decoration: underline; }
+    .unavailable { color: #999; }
+  </style>
 </head>
 <body>
-  <h1>Index of ${req.path}</h1>
-  <ul>`;
+  <h1>📁 Select a Folder to Browse</h1>
+  <ul class="folder-list">`;
 
-    // Add parent directory link if not at root
-    if (req.path !== '/') {
-      const parentPath = path.join(req.path, '..');
-      html += `<li><a href="${parentPath}">📁 ..</a></li>`;
+  folders.forEach(folder => {
+    if (folder.available) {
+      html += `<li class="folder-item">
+        <a href="/${folder.name}">📂 ${folder.name}</a>
+      </li>`;
+    } else {
+      html += `<li class="folder-item unavailable">
+        📁 ${folder.name} (Not built yet - run 'npm run build' in this folder)
+      </li>`;
     }
+  });
 
-    // List all files and folders
-    files.forEach(file => {
-      const fileFullPath = path.join(filePath, file);
-      const fileStat = fs.statSync(fileFullPath);
-      const urlPath = path.join(req.path, file).replace(/\\/g, '/');
-      const icon = fileStat.isDirectory() ? '📁' : '📄';
-
-      html += `<li><a href="${urlPath}">${icon} ${file}</a></li>`;
-    });
-
-    html += `</ul>
+  html += `</ul>
 </body>
 </html>`;
 
-    res.send(html);
-  } else {
-    // If it's a file, serve it
-    res.sendFile(filePath);
-  }
+  res.send(html);
+});
+
+// Serve sonnet4.5 static files
+app.use('/sonnet4.5', express.static(path.join(__dirname, 'sonnet4.5/out')));
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).send(`
+    <h1>404 - Not Found</h1>
+    <p><a href="/">← Back to home</a></p>
+  `);
 });
 
 app.listen(PORT, () => {
