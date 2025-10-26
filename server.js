@@ -11,6 +11,39 @@ const folders = [
   { name: 'glm4.6', path: 'glm4.6/out', available: true }
 ];
 
+// Middleware to serve selected app
+app.use((req, res, next) => {
+  const appName = req.query.app || req.path.split('/')[1];
+
+  // If requesting a specific app folder
+  if (appName && folders.find(f => f.name === appName && f.available)) {
+    const folder = folders.find(f => f.name === appName);
+    const appPath = path.join(__dirname, folder.path);
+
+    // Redirect /appname to /appname/ for proper relative paths
+    if (req.path === `/${appName}` && !req.path.endsWith('/')) {
+      return res.redirect(`/${appName}/`);
+    }
+
+    // Serve static files from the app's out folder
+    const filePath = req.path.replace(`/${appName}`, '').replace(/^\//, '') || 'index.html';
+    const fullPath = path.join(appPath, filePath);
+
+    if (fs.existsSync(fullPath)) {
+      if (fs.statSync(fullPath).isDirectory()) {
+        const indexPath = path.join(fullPath, 'index.html');
+        if (fs.existsSync(indexPath)) {
+          return res.sendFile(indexPath);
+        }
+      } else {
+        return res.sendFile(fullPath);
+      }
+    }
+  }
+
+  next();
+});
+
 // Root page - show folder selection
 app.get('/', (req, res) => {
   let html = `<!DOCTYPE html>
@@ -34,7 +67,7 @@ app.get('/', (req, res) => {
   folders.forEach(folder => {
     if (folder.available) {
       html += `<li class="folder-item">
-        <a href="/${folder.name}">📂 ${folder.name}</a>
+        <a href="/${folder.name}/">📂 ${folder.name}</a>
       </li>`;
     } else {
       html += `<li class="folder-item unavailable">
@@ -49,12 +82,6 @@ app.get('/', (req, res) => {
 
   res.send(html);
 });
-
-// Serve sonnet4.5 static files
-app.use('/sonnet4.5', express.static(path.join(__dirname, 'sonnet4.5/out')));
-
-// Serve glm4.6 static files
-app.use('/glm4.6', express.static(path.join(__dirname, 'glm4.6/out')));
 
 // 404 handler
 app.use((req, res) => {
